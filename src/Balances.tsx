@@ -12,26 +12,23 @@ export default function Balances(props: Props) {
   const accounts = keyring.getPairs();
   const account = accounts[0]
   const [balances, setBalances] = useState<{[index: string]: string }>({});
-  
-  const unsubscribeFunc = async () => {
+
+  useEffect(() => {
+    let unsubscribe: Function | undefined;
+
     try {
-      return await api.query.balances.freeBalance(account.address, (current) => {
+          api.query.balances.freeBalance(account.address, (current) => {
           setBalances(balances => {
             return {
               ...balances,
               [account.address]: current.toString()
             }
         })  
-      })
+      }).then( unsub => unsubscribe = unsub )
      } catch (error) {
       console.error(error);
     }
-  }
-
-  useEffect(() => {
-    const  unsubscribe = unsubscribeFunc() ;
-      
-    return async () => await unsubscribe();
+    return () => unsubscribe && unsubscribe();
   },[]);
 
   function renderAccountWithBalances () {
