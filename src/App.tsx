@@ -7,7 +7,7 @@ import Balances from './Balances'
   
 interface State {
     api: ApiPromise | undefined
-  }
+}
 
  export default class App extends React.Component {
   state: State = {
@@ -47,4 +47,4 @@ interface State {
       console.log(e)
     }
   }
- }
+}
