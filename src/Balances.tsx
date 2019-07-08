@@ -28,9 +28,9 @@ export default function Balances(props: Props) {
       }
     });
       
-    // return () => unsubscribes.length && unsubscribes.map(async (unsubscribe) => {
-    //   if (unsubscribe) await unsubscribe();
-    // }) ;
+    return () => unsubscribes.length && unsubscribes.map(async (unsubscribe) => {
+      if (unsubscribe) await unsubscribe();
+    }) ;
   },[]);
 
   function renderAccountsWithBalances () {
