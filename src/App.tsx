@@ -1,26 +1,50 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import testKeyring from '@polkadot/keyring/testing'
 
-export default App;
+import Balances from './Balances'
+  
+interface State {
+    api: ApiPromise | undefined
+  }
+
+ export default class App extends React.Component {
+  state: State = {
+    api: undefined
+  };
+
+  async componentDidMount () {
+    const provider = new WsProvider();
+
+    // Create the API and wait until ready
+    const api = await ApiPromise.create(provider);
+
+    try {
+      this.setState({api})
+    }catch (e) {
+        console.log(e)
+    }
+  }
+
+  render () {
+    const {api} = this.state;
+
+    try {
+      if (!api || !api.isReady){
+        return <div>disconnected</div>
+      }
+
+      return (
+        <>
+        <Balances
+          api={api}
+          keyring={testKeyring()}
+        />
+        </>
+      );
+    } catch (e) {
+      console.log(e)
+    }
+  }
+ }
