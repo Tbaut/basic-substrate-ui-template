@@ -13,24 +13,27 @@ export default function Balances(props: Props) {
   const [balances, setBalances] = useState<{[index: string]: string }>({});
 
   useEffect(() => {
-    const unsubscribes = accounts.map(async (account) => {
-      try {
-        await api.query.balances.freeBalance(account.address, (current) => {
-          setBalances(balances => {
-            return {
-              ...balances,
-              [account.address]: current.toString()
-            }
+    let unsubscribeAll : Function | undefined;
+    const addresses = accounts.map(account => account.address);
+  
+    try {
+      api.query.balances.freeBalance
+        .multi(addresses, (currentBalances) => {
+          currentBalances.map((balance, index) => {
+            setBalances(balances => {
+              return {
+                ...balances,
+                [addresses[index]]: balance.toString()
+              }
+            });
           });
         })
-      } catch (error) {
-        console.error(error);
-      }
-    });
+        .then( unsub => unsubscribeAll =  unsub);
+    } catch (error) {
+      console.error(error);
+    }
       
-    return () => unsubscribes.length && unsubscribes.map(async (unsubscribe) => {
-      if (unsubscribe) await unsubscribe();
-    }) ;
+    return () => unsubscribeAll && unsubscribeAll ;
   },[]);
 
   function renderAccountsWithBalances () {
