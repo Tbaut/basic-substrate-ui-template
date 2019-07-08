@@ -17,12 +17,12 @@ export default function Balances(props: Props) {
     let unsubscribe: Function | undefined;
 
     try {
-          api.query.balances.freeBalance(account.address, (current) => {
-          setBalances(balances => {
-            return {
-              ...balances,
-              [account.address]: current.toString()
-            }
+      api.query.balances.freeBalance(account.address, (current) => {
+        setBalances(balances => {
+          return {
+            ...balances,
+            [account.address]: current.toString()
+          }
         })  
       }).then( unsub => unsubscribe = unsub )
      } catch (error) {
