@@ -25,7 +25,7 @@ export default function Balances(props: Props) {
           }
         })  
       }).then( unsub => unsubscribe = unsub )
-     } catch (error) {
+    } catch (error) {
       console.error(error);
     }
     return () => unsubscribe && unsubscribe();
