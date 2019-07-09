@@ -16,18 +16,17 @@ export default function Balances(props: Props) {
   useEffect(() => {
     let unsubscribe: Function | undefined;
 
-    try {
-      api.query.balances.freeBalance(account.address, (current) => {
-        setBalances(balances => {
-          return {
-            ...balances,
-            [account.address]: current.toString()
-          }
-        })  
-      }).then( unsub => unsubscribe = unsub )
-    } catch (error) {
-      console.error(error);
-    }
+    api.query.balances.freeBalance(account.address, (current) => {
+      setBalances(balances => {
+        return {
+          ...balances,
+          [account.address]: current.toString()
+        }
+      })  
+    })
+    .then( unsub => unsubscribe = unsub )
+    .catch (console.error);
+
     return () => unsubscribe && unsubscribe();
   },[]);
 
