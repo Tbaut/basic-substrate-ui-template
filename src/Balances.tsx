@@ -28,7 +28,7 @@ export default function Balances(props: Props) {
             });
           });
         })
-        .then( unsub => unsubscribeAll =  unsub);
+        .then( unsub => unsubscribeAll = unsub);
     } catch (error) {
       console.error(error);
     }
