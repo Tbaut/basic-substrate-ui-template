@@ -16,22 +16,19 @@ export default function Balances(props: Props) {
     let unsubscribeAll : Function | undefined;
     const addresses = accounts.map(account => account.address);
   
-    try {
-      api.query.balances.freeBalance
-        .multi(addresses, (currentBalances) => {
-          currentBalances.map((balance, index) => {
-            setBalances(balances => {
-              return {
-                ...balances,
-                [addresses[index]]: balance.toString()
-              }
-            });
+    api.query.balances.freeBalance
+      .multi(addresses, (currentBalances) => {
+        currentBalances.map((balance, index) => {
+          setBalances(balances => {
+            return {
+              ...balances,
+              [addresses[index]]: balance.toString()
+            }
           });
-        })
-        .then( unsub => unsubscribeAll = unsub);
-    } catch (error) {
-      console.error(error);
-    }
+        });
+      })
+      .then( unsub => unsubscribeAll = unsub)
+      .catch(console.error);
       
     return () => unsubscribeAll && unsubscribeAll() ;
   },[]);
