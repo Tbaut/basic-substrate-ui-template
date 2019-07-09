@@ -33,7 +33,7 @@ export default function Balances(props: Props) {
       console.error(error);
     }
       
-    return () => unsubscribeAll && unsubscribeAll ;
+    return () => unsubscribeAll && unsubscribeAll() ;
   },[]);
 
   function renderAccountsWithBalances () {
