@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { KeyringInstance } from '@polkadot/keyring/types';
 import { ApiPromise } from '@polkadot/api';
+import { Table } from 'semantic-ui-react';
 
 interface Props {
   api: ApiPromise,
@@ -18,14 +19,15 @@ export default function Balances(props: Props) {
   
     api.query.balances.freeBalance
       .multi(addresses, (currentBalances) => {
-        currentBalances.map((balance, index) => {
+        console.log('currentBalances',currentBalances)
+        currentBalances.map((balance, index) => 
           setBalances(balances => {
             return {
               ...balances,
               [addresses[index]]: balance.toString()
             }
-          });
-        });
+          })
+        );
       })
       .then( unsub => unsubscribeAll = unsub)
       .catch(console.error);
@@ -33,16 +35,22 @@ export default function Balances(props: Props) {
     return () => unsubscribeAll && unsubscribeAll() ;
   },[]);
 
-  function renderAccountsWithBalances () {
-    return accounts.map((account, index) =>  {
-      return <p key={index}>{account.meta.name}: {account.address} balance: {balances && balances[account.address]}</p>;
-    });
-  }
-
   return (
     <>
       <h1>Balances</h1>
-      {renderAccountsWithBalances()}
+      <Table celled striped> 
+        <Table.Body>
+          {accounts.map((account,index) =>  {
+            return (
+              <Table.Row key={index}>
+                <Table.Cell collapsing>{account.meta.name}</Table.Cell>
+                <Table.Cell>{account.address}</Table.Cell>
+                <Table.Cell>{balances && balances[account.address]}</Table.Cell>  
+              </Table.Row>  
+            )
+          })}
+        </Table.Body>
+      </Table>
     </>
   )
 }

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@polkadot/api": "^0.82.0-beta.36",
+    "@polkadot/api": "^0.82.0-beta.53",
     "@polkadot/keyring": "^0.93.1",
     "@polkadot/ui-identicon": "^0.41.1",
     "@polkadot/ui-keyring": "^0.41.1",
@@ -17,6 +17,8 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.87.3",
     "typescript": "3.5.2"
   },
   "scripts": {

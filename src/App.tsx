@@ -2,8 +2,11 @@ import React from 'react';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import testKeyring from '@polkadot/keyring/testing'
+import { Container} from 'semantic-ui-react';
+import 'semantic-ui-css/semantic.min.css'
 
 import Balances from './Balances'
+import Transfer from './Transfer'
   
 interface State {
     api: ApiPromise | undefined
@@ -22,7 +25,7 @@ interface State {
 
     try {
       this.setState({api})
-    }catch (e) {
+    } catch (e) {
         console.log(e)
     }
   }
@@ -36,12 +39,16 @@ interface State {
       }
 
       return (
-        <>
-        <Balances
-          api={api}
-          keyring={testKeyring()}
-        />
-        </>
+        <Container>
+          <Balances
+            api={api}
+            keyring={testKeyring()}
+          />
+          <Transfer
+            api={api}
+            keyring={testKeyring()}
+          />
+        </Container>
       );
     } catch (e) {
       console.log(e)
