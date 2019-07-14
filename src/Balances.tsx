@@ -43,7 +43,7 @@ export default function Balances(props: Props) {
           {accounts.map((account,index) =>  {
             return (
               <Table.Row key={index}>
-                <Table.Cell collapsing>{account.meta.name}</Table.Cell>
+                <Table.Cell textAlign='right'>{account.meta.name}</Table.Cell>
                 <Table.Cell>{account.address}</Table.Cell>
                 <Table.Cell>{balances && balances[account.address]}</Table.Cell>  
               </Table.Row>  
