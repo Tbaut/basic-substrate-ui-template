@@ -1,11 +1,13 @@
 import React, {useState, SyntheticEvent} from 'react';
-import { KeyringInstance } from '@polkadot/keyring/types';
 import { ApiPromise } from '@polkadot/api';
 import { Button, Dropdown, Form, Input, DropdownProps, InputOnChangeData } from 'semantic-ui-react';
+import { Keyring } from '@polkadot/ui-keyring';
+import { web3FromSource } from '@polkadot/extension-dapp';
+import { KeyringPair } from '@polkadot/keyring/types';
 
 interface Props {
   api: ApiPromise,
-  keyring: KeyringInstance
+  keyring: Keyring
 };
 
 interface FormState {
@@ -26,13 +28,11 @@ export default function Transfer(props: Props) {
   const [status, setStatus] = useState<string>('');
 
   // get the list of accounts we possess the private key for
-  const keyringOptions = () => (
-    keyring.getPairs().map((account) =>  ({
+  const keyringOptions = keyring.getPairs().map((account) =>  ({
       key: account.address,
       value: account.address,
-      text: account.meta.name.toUpperCase() 
-    }))
-  )
+      text: account.meta.name.toUpperCase(),
+    }));
 
   const onChange = (_:SyntheticEvent<HTMLElement, Event>, data:InputOnChangeData | DropdownProps): void => {
     setFormState(formState => {
@@ -43,16 +43,27 @@ export default function Transfer(props: Props) {
     });
   }
 
-  const makeTransfer = () => {
+  const makeTransfer = async () => {
     const { addressTo, addressFrom, amount } = formState;
     const fromPair = keyring.getPair(addressFrom);
+    const { address, meta: { source , isInjected } } = fromPair;
+    let fromParam: string | KeyringPair;
+
+    // set the signer
+    if (isInjected) {
+      const injected = await web3FromSource(source);
+      fromParam = address
+      api.setSigner(injected.signer);
+    } else {
+      fromParam = fromPair
+    }
 
     try{
       setStatus('Sending...');
 
       api.tx.balances
       .transfer(addressTo, amount)
-      .signAndSend(fromPair, ({ status }) => {
+      .signAndSend(fromParam, ({ status }) => {
         if (status.type === 'Finalized') {
           setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
         } else {
@@ -78,7 +89,7 @@ export default function Transfer(props: Props) {
             search
             selection
             state='addressFrom'
-            options={keyringOptions()}
+            options={keyringOptions}
             value={formState.addressFrom}
           />
         </Form.Field>

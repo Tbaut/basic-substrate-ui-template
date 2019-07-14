@@ -1,26 +1,24 @@
 import React, {useEffect, useState} from 'react';
-import { KeyringInstance } from '@polkadot/keyring/types';
 import { ApiPromise } from '@polkadot/api';
 import { Table } from 'semantic-ui-react';
-import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
+import { Keyring } from '@polkadot/ui-keyring';
 
 interface Props {
   api: ApiPromise,
-  keyring: KeyringInstance,
-  injected: InjectedAccountWithMeta[] | undefined
+  keyring: Keyring
 };
 
 export default function Balances(props: Props) {
-  const {api, injected, keyring} = props;
+  const {api, keyring} = props;
   const accounts = keyring.getPairs();
   const addresses = accounts.map(account => account.address);
   const accountNames: string[] = accounts.map((account) => account.meta.name)
-
+/*
   injected && injected.map((accountWithMeta) => {
     accountNames.push(accountWithMeta.meta.name + ' (extension)');
     addresses.push(accountWithMeta.address)
   });
-  
+ */ 
   const [balances, setBalances] = useState<{[index: string]: string }>({});
 
   useEffect(() => {
@@ -48,11 +46,10 @@ export default function Balances(props: Props) {
       <h1>Balances</h1>
       <Table celled striped> 
         <Table.Body>
-          {accountNames.map((name,index) =>  {
-            const address = addresses[index]
+          {addresses.map((address,index) =>  {
             return (
               <Table.Row key={index}>
-                <Table.Cell textAlign='right'>{name}</Table.Cell>
+                <Table.Cell textAlign='right'>{accountNames[index]}</Table.Cell>
                 <Table.Cell>{address}</Table.Cell>
                 <Table.Cell>{balances && balances[address]}</Table.Cell>  
               </Table.Row>  
