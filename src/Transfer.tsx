@@ -20,7 +20,6 @@ const initialState: FormState = {
   amount: 0
 }
 
-
 export default function Transfer(props: Props) {
   const {api, keyring} = props;
   const [formState, setFormState] = useState<FormState>(initialState);

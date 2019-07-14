@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import { KeyringInstance } from '@polkadot/keyring/types';
 import { ApiPromise } from '@polkadot/api';
 import { Table } from 'semantic-ui-react';
+import { web3Accounts, web3Enable, web3FromAddress } from '@polkadot/extension-dapp';
+import { InjectedExtension, InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 
 interface Props {
   api: ApiPromise,
@@ -19,7 +21,6 @@ export default function Balances(props: Props) {
   
     api.query.balances.freeBalance
       .multi(addresses, (currentBalances) => {
-        console.log('currentBalances',currentBalances)
         currentBalances.map((balance, index) => 
           setBalances(balances => {
             return {
@@ -33,6 +34,27 @@ export default function Balances(props: Props) {
       .catch(console.error);
       
     return () => unsubscribeAll && unsubscribeAll() ;
+  },[]);
+
+  const [injectedBalances, setInjectedBalances] = useState<{[index: string]: string}>({})
+
+  useEffect(()=>{
+    let allInjected: InjectedExtension[];
+    let allInjectedAccounts: InjectedAccountWithMeta[];
+
+    web3Enable('my cool dapp').then((extensions: InjectedExtension[]) => {
+      extensions.map((extension) => {
+        console.log('extension',extension);
+      })
+
+      if (extensions.length){
+        web3Accounts().then((injectedAccounts) => {
+          injectedAccounts.map((injectedAccount) => {
+            console.log('injectedAccount',injectedAccount)
+          })
+        });
+      }
+    });
   },[]);
 
   return (
