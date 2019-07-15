@@ -2,12 +2,20 @@ import React, { useState, useEffect } from 'react';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import keyring from '@polkadot/ui-keyring'
-import { Container} from 'semantic-ui-react';
+import { Container, Dimmer, Loader} from 'semantic-ui-react';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import 'semantic-ui-css/semantic.min.css'
 
 import Balances from './Balances'
 import Transfer from './Transfer'
+
+interface injectedAccounts {
+  address: string;
+  meta: {
+      name: string;
+      source: string;
+  };
+};
 
  export default function App () {
   const [api, setApi] = useState<ApiPromise>();
@@ -22,20 +30,10 @@ import Transfer from './Transfer'
   },[])
 
   useEffect(() => {
-/*
-    let injectedAccounts: {
-          address: string;
-          meta: {
-              name: string;
-              source: string;
-          };
-      }[] = [];
-*/
     web3Enable('basic substrate ui')
     .then((extensions) => {
-      extensions.map((extension) => console.log('extension',extension))
-
       // if the user accepts it the extension's array will contain something 
+      // extensions.map((extension) => console.log('extension',extension))
       if (extensions.length){
         web3Accounts().then((accounts) => {
           return accounts.map(({ address, meta }) => ({
@@ -47,24 +45,37 @@ import Transfer from './Transfer'
           }))
         })
         .then((injectedAccounts) => {
-          keyring.loadAll({
-            isDevelopment: true
-          },injectedAccounts);
-          setLoaded(true);
+          loadAccounts(injectedAccounts)
         } 
           
         );
       } else {
-        keyring.loadAll({
-          isDevelopment: true
-        })
-        setLoaded(true);
+        loadAccounts();
       }
     })
+
+    const loadAccounts = function (injectedAccounts: injectedAccounts[] = []) {
+      keyring.loadAll({
+        isDevelopment: true
+      }, injectedAccounts)
+      setLoaded(true);
+    }
   },[]);
 
-  if(!api || !api.isReady || !loaded){
-    return <div>Disconnected</div>
+  const loader = function (text:string){
+    return (
+      <Dimmer active>
+        <Loader size='small'>{text}</Loader>
+      </Dimmer>
+    );
+  };
+
+  if (!loaded) {
+    return loader('Please review the extension\'s authorization')
+  }
+  
+  if(!api || !api.isReady){
+    return loader('Connecting to the blockchain')
   }
 
   return (
