@@ -13,12 +13,6 @@ export default function Balances(props: Props) {
   const accounts = keyring.getPairs();
   const addresses = accounts.map(account => account.address);
   const accountNames: string[] = accounts.map((account) => account.meta.name)
-/*
-  injected && injected.map((accountWithMeta) => {
-    accountNames.push(accountWithMeta.meta.name + ' (extension)');
-    addresses.push(accountWithMeta.address)
-  });
- */ 
   const [balances, setBalances] = useState<{[index: string]: string }>({});
 
   useEffect(() => {
