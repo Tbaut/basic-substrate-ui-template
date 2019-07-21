@@ -1,4 +1,4 @@
-import React, {useState, SyntheticEvent} from 'react';
+import React, { useState, SyntheticEvent } from 'react';
 import { ApiPromise } from '@polkadot/api';
 import { Button, Dropdown, Form, Input, DropdownProps, InputOnChangeData } from 'semantic-ui-react';
 import { Keyring } from '@polkadot/ui-keyring';
@@ -20,61 +20,61 @@ const initialState: FormState = {
   addressFrom: '',
   addressTo: '',
   amount: 0
-}
+};
 
-export default function Transfer(props: Props) {
-  const {api, keyring} = props;
+export default function Transfer (props: Props) {
+  const { api, keyring } = props;
   const [formState, setFormState] = useState<FormState>(initialState);
   const [status, setStatus] = useState<string>('');
 
   // get the list of accounts we possess the private key for
-  const keyringOptions = keyring.getPairs().map((account) =>  ({
-      key: account.address,
-      value: account.address,
-      text: account.meta.name.toUpperCase(),
-    }));
+  const keyringOptions = keyring.getPairs().map((account) => ({
+    key: account.address,
+    value: account.address,
+    text: account.meta.name.toUpperCase()
+  }));
 
   const onChange = (_:SyntheticEvent<HTMLElement, Event>, data:InputOnChangeData | DropdownProps): void => {
     setFormState(formState => {
       return {
         ...formState,
         [data.state]: data.value
-      }
+      };
     });
-  }
+  };
 
   const makeTransfer = async () => {
     const { addressTo, addressFrom, amount } = formState;
     const fromPair = keyring.getPair(addressFrom);
-    const { address, meta: { source , isInjected } } = fromPair;
+    const { address, meta: { source, isInjected } } = fromPair;
     let fromParam: string | KeyringPair;
 
     // set the signer
     if (isInjected) {
       const injected = await web3FromSource(source);
-      fromParam = address
+      fromParam = address;
       api.setSigner(injected.signer);
     } else {
-      fromParam = fromPair
+      fromParam = fromPair;
     }
 
-    try{
+    try {
       setStatus('Sending...');
 
       api.tx.balances
-      .transfer(addressTo, amount)
-      .signAndSend(fromParam, ({ status }) => {
-        if (status.isFinalized) {
-          setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
-        } else {
-          setStatus(`Current transfer status: ${status.type}`);
-        }
-      });
+        .transfer(addressTo, amount)
+        .signAndSend(fromParam, ({ status }) => {
+          if (status.isFinalized) {
+            setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
+          } else {
+            setStatus(`Current transfer status: ${status.type}`);
+          }
+        });
     } catch (e) {
       setStatus(':( transaction failed');
       console.error('ERROR:', e);
     }
-  }
+  };
 
   return (
     <>
@@ -115,7 +115,7 @@ export default function Transfer(props: Props) {
           />
         </Form.Field>
         <Form.Field>
-          <Button  
+          <Button
             onClick={makeTransfer}
             primary
             type='submit'
@@ -126,5 +126,5 @@ export default function Transfer(props: Props) {
         </Form.Field>
       </Form>
     </>
-  )
+  );
 }

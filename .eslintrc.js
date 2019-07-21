@@ -4,12 +4,14 @@ module.exports = {
     es6: true
   },
   extends: [
-    'standard'
+    'standard',
+    'plugin:react/recommended' 
   ],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly'
   },
+  parser: 'babel-eslint',
   parserOptions: {
     ecmaFeatures: {
       jsx: true
@@ -21,5 +23,6 @@ module.exports = {
     'react'
   ],
   rules: {
+    "semi": [2, "always"]
   }
 }
