@@ -9,14 +9,6 @@ import 'semantic-ui-css/semantic.min.css'
 import Balances from './Balances'
 import Transfer from './Transfer'
 
-interface injectedAccounts {
-  address: string;
-  meta: {
-      name: string;
-      source: string;
-  };
-};
-
  export default function App () {
   const [api, setApi] = useState<ApiPromise>();
   const [loaded, setLoaded] = useState(false);
@@ -30,36 +22,27 @@ interface injectedAccounts {
   },[])
 
   useEffect(() => {
-    web3Enable('basic substrate ui')
+    web3Enable('basics dapp tutorial')
     .then((extensions) => {
       // if the user accepts it the extension's array will contain something 
       // extensions.map((extension) => console.log('extension',extension))
-      if (extensions.length){
-        web3Accounts().then((accounts) => {
-          return accounts.map(({ address, meta }) => ({
-            address,
-            meta: {
-              ...meta,
-              name: `${meta.name} (extension)`
-            }
-          }))
-        })
-        .then((injectedAccounts) => {
-          loadAccounts(injectedAccounts)
-        } 
-          
-        );
-      } else {
-        loadAccounts();
-      }
-    })
 
-    const loadAccounts = function (injectedAccounts: injectedAccounts[] = []) {
-      keyring.loadAll({
-        isDevelopment: true
-      }, injectedAccounts)
-      setLoaded(true);
-    }
+      web3Accounts().then((accounts) => {
+        return accounts.map(({ address, meta }) => ({
+          address,
+          meta: {
+            ...meta,
+            name: `${meta.name} (${meta.source})`
+          }
+        }))
+      })
+      .then((injectedAccounts) => {
+        keyring.loadAll({
+          isDevelopment: true
+        }, injectedAccounts)
+        setLoaded(true);
+      });
+    })
   },[]);
 
   const loader = function (text:string){

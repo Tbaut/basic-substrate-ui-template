@@ -20,14 +20,12 @@ export default function Balances(props: Props) {
 
     api.query.balances.freeBalance
       .multi(addresses, (currentBalances) => {
-        currentBalances.map((balance, index) => 
-          setBalances(balances => {
-            return {
-              ...balances,
-              [addresses[index]]: balance.toString()
-            }
-          })
-        );
+
+        const balancesMap = addresses.reduce((acc, address, index) => ({
+          ...acc,
+          [address]: currentBalances[index].toString()
+        }),{})
+          setBalances(balancesMap);
       })
       .then( unsub => unsubscribeAll = unsub)
       .catch(console.error);

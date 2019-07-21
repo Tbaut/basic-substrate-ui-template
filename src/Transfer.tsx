@@ -64,7 +64,7 @@ export default function Transfer(props: Props) {
       api.tx.balances
       .transfer(addressTo, amount)
       .signAndSend(fromParam, ({ status }) => {
-        if (status.type === 'Finalized') {
+        if (status.isFinalized) {
           setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
         } else {
           setStatus(`Current transfer status: ${status.type}`);
