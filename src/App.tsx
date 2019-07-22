@@ -21,8 +21,9 @@ export default function App () {
   const [api, setApi] = useState<ApiPromise>(new ApiPromise());
   const [apiReady, setApiReady] = useState(false);
   const [accountLoaded, setaccountLoaded] = useState(false);
-  const WS_PROVIDER = 'ws://127.0.0.1:9944';
+  // const WS_PROVIDER = 'ws://127.0.0.1:9944';
   // const WS_PROVIDER = 'ws://35.239.108.13:9944';
+  const WS_PROVIDER = 'ws://dev-node.substrate.dev:9944';
 
   useEffect(() => {
     const provider = new WsProvider(WS_PROVIDER);
