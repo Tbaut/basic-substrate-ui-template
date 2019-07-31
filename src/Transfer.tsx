@@ -1,9 +1,9 @@
 import React, { useState, SyntheticEvent } from 'react';
 import { ApiPromise } from '@polkadot/api';
-import { Button, Dropdown, Form, Input, DropdownProps, InputOnChangeData } from 'semantic-ui-react';
 import { Keyring } from '@polkadot/ui-keyring';
-import { web3FromSource } from '@polkadot/extension-dapp';
-import { KeyringPair } from '@polkadot/keyring/types';
+import { Dropdown, Form, Input, DropdownProps, InputOnChangeData } from 'semantic-ui-react';
+
+import TxButton from './TxButton';
 
 interface Props {
   api: ApiPromise,
@@ -26,7 +26,8 @@ export default function Transfer (props: Props) {
   const { api, keyring } = props;
   const [formState, setFormState] = useState<FormState>(initialState);
   const [status, setStatus] = useState<string>('');
-
+  const { addressTo, addressFrom, amount } = formState;
+  const fromPair = (addressFrom && keyring.getPair(addressFrom)) || undefined;
   // get the list of accounts we possess the private key for
   const keyringOptions = keyring.getPairs().map((account) => ({
     key: account.address,
@@ -43,39 +44,6 @@ export default function Transfer (props: Props) {
     });
   };
 
-  const makeTransfer = async () => {
-    const { addressTo, addressFrom, amount } = formState;
-    const fromPair = keyring.getPair(addressFrom);
-    const { address, meta: { source, isInjected } } = fromPair;
-    let fromParam: string | KeyringPair;
-
-    // set the signer
-    if (isInjected) {
-      const injected = await web3FromSource(source);
-      fromParam = address;
-      api.setSigner(injected.signer);
-    } else {
-      fromParam = fromPair;
-    }
-
-    try {
-      setStatus('Sending...');
-
-      api.tx.balances
-        .transfer(addressTo, amount)
-        .signAndSend(fromParam, ({ status }) => {
-          if (status.isFinalized) {
-            setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
-          } else {
-            setStatus(`Current transfer status: ${status.type}`);
-          }
-        });
-    } catch (e) {
-      setStatus(':( transaction failed');
-      console.error('ERROR:', e);
-    }
-  };
-
   return (
     <>
       <h1>Transfer</h1>
@@ -90,7 +58,7 @@ export default function Transfer (props: Props) {
             selection
             state='addressFrom'
             options={keyringOptions}
-            value={formState.addressFrom}
+            value={addressFrom}
           />
         </Form.Field>
         <Form.Field>
@@ -101,7 +69,7 @@ export default function Transfer (props: Props) {
             placeholder='address'
             state='addressTo'
             type='text'
-            value={formState.addressTo}
+            value={addressTo}
           />
         </Form.Field>
         <Form.Field>
@@ -111,17 +79,18 @@ export default function Transfer (props: Props) {
             onChange={onChange}
             state='amount'
             type='number'
-            value={formState.amount}
+            value={amount}
           />
         </Form.Field>
         <Form.Field>
-          <Button
-            onClick={makeTransfer}
-            primary
-            type='submit'
-          >
-            Send
-          </Button>
+          <TxButton
+            api={api}
+            fromPair={fromPair}
+            label={'Send'}
+            params={[addressTo, amount]}
+            setStatus={setStatus}
+            tx={api.tx.balances.transfer}
+          />
           {status}
         </Form.Field>
       </Form>
