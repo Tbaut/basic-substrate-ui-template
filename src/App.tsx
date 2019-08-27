@@ -27,7 +27,7 @@ export default function App () {
   useEffect(() => {
     const provider = new WsProvider(WS_PROVIDER);
 
-    ApiPromise.create(provider)
+    ApiPromise.create({provider})
       .then((api) => {
         setApi(api);
         api.isReady.then(() => setApiReady(true));
@@ -58,7 +58,7 @@ export default function App () {
 
     // if there is no injection, or the user hasn't accepted it,
     // load any local account
-    !isWeb3Injected && loadAccounts();
+    // !isWeb3Injected && loadAccounts();
   }, []);
 
   const loadAccounts = (injectedAccounts:injectedAccountType[] = []) => {
