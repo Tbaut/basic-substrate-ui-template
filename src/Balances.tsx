@@ -30,7 +30,7 @@ export default function Balances (props: Props) {
       .catch(console.error);
 
     return () => unsubscribeAll && unsubscribeAll();
-  }, [addresses, api.query.balances.freeBalance]);
+  }, [api.query.balances.freeBalance]);
 
   return (
     <>

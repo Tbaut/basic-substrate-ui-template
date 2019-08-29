@@ -32,14 +32,14 @@ export default function App () {
         setApi(api);
         api.isReady.then(() => setApiReady(true));
       })
-      .catch((e) => console.error(e));
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
     web3Enable('basic-dapp-tutorial')
       .then((extensions) => {
-        // web3Account promise resolves with an array of injected accounts
-        // or an empty array if there's no account to inject 
+        // web3Account resolves with the injected accounts
+        // or an empty array
         web3Accounts()
           .then((accounts) => {
             return accounts.map(({ address, meta }) => ({
