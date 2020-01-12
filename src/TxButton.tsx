@@ -5,12 +5,12 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { ApiPromise } from '@polkadot/api';
 
 interface Props {
-    api: ApiPromise,
-    fromPair?: KeyringPair,
-    label: string,
-    params: any[],
-    setStatus: (statusString: string) => void,
-    tx: any
+    api: ApiPromise;
+    fromPair?: KeyringPair;
+    label: string;
+    params: any[];
+    setStatus: (statusString: string) => void;
+    tx: any;
 }
 
 export default function TxButton ({ api, fromPair, label, params, setStatus, tx }: Props) {
@@ -30,7 +30,7 @@ export default function TxButton ({ api, fromPair, label, params, setStatus, tx 
 
       try {
         setStatus('Sending...');
-        tx(...params).signAndSend(fromParam, ({ status } : { status: any }) => {
+        tx(...params).signAndSend(fromParam, ({ status }: { status: any }) => {
           if (status.isFinalized) {
             setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
           } else {

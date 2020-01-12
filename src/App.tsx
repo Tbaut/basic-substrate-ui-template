@@ -17,7 +17,7 @@ type injectedAccountType = {
   };
 }
 
-export default function App () {
+export default function App (): JSX.Element {
   const [api, setApi] = useState<ApiPromise>(new ApiPromise());
   const [apiReady, setApiReady] = useState(false);
   const [accountLoaded, setaccountLoaded] = useState(false);
@@ -34,10 +34,17 @@ export default function App () {
       })
       .catch(console.error);
   }, []);
+  
+  const loadAccounts = (injectedAccounts: injectedAccountType[] = []): void => {
+    keyring.loadAll({
+      isDevelopment: true
+    }, injectedAccounts);
+    setaccountLoaded(true);
+  };
 
   useEffect(() => {
     web3Enable('basic-dapp-tutorial')
-      .then((extensions) => {
+      .then(() => {
         // web3Account resolves with the injected accounts
         // or an empty array
         web3Accounts()
@@ -58,14 +65,8 @@ export default function App () {
       .catch(console.error);
   }, []);
 
-  const loadAccounts = (injectedAccounts:injectedAccountType[] = []) => {
-    keyring.loadAll({
-      isDevelopment: true
-    }, injectedAccounts);
-    setaccountLoaded(true);
-  };
 
-  const loader = function (text:string) {
+  const loader = function (text: string): JSX.Element {
     return (
       <Dimmer active>
         <Loader size='small'>{text}</Loader>

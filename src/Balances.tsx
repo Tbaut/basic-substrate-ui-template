@@ -16,7 +16,7 @@ export default function Balances (props: Props) {
   const [balances, setBalances] = useState<{[index: string]: string }>({});
 
   useEffect(() => {
-    let unsubscribeAll : Function | undefined;
+    let unsubscribeAll: Function | undefined;
 
     api.query.balances.freeBalance
       .multi(addresses, (currentBalances) => {

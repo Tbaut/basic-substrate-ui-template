@@ -6,14 +6,14 @@ import { Dropdown, Form, Input, DropdownProps, InputOnChangeData } from 'semanti
 import TxButton from './TxButton';
 
 interface Props {
-  api: ApiPromise,
-  keyring: Keyring
-};
+  api: ApiPromise;
+  keyring: Keyring;
+}
 
 interface FormState {
-  addressFrom: string,
-  addressTo: string,
-  amount: number
+  addressFrom: string;
+  addressTo: string;
+  amount: number;
 }
 
 const initialState: FormState = {
@@ -35,7 +35,7 @@ export default function Transfer (props: Props) {
     text: account.meta.name.toUpperCase()
   }));
 
-  const onChange = (_:SyntheticEvent<HTMLElement, Event>, data:InputOnChangeData | DropdownProps): void => {
+  const onChange = (_: SyntheticEvent<HTMLElement, Event>, data: InputOnChangeData | DropdownProps): void => {
     setFormState(formState => {
       return {
         ...formState,

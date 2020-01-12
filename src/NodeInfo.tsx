@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
 
 type Props = {
-  api: ApiPromise
+  api: ApiPromise;
 };
 
 type NodeInfoType = {
-  chain?:string,
-  nodeName?:string,
-  nodeVersion?:string,
+  chain?: string;
+  nodeName?: string;
+  nodeVersion?: string;
 };
 
 export default function NodeInfo (props: Props) {
