@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
+import { AccountInfo } from '@polkadot/types/interfaces';
 import { Table } from 'semantic-ui-react';
 import { Keyring } from '@polkadot/ui-keyring';
 
@@ -8,21 +9,21 @@ type Props = {
   keyring: Keyring;
 }
 
-export default function Balances (props: Props) {
+export default function Balances (props: Props): JSX.Element {
   const { api, keyring } = props;
   const accounts = keyring.getPairs();
   const addresses = accounts.map(account => account.address);
-  const accountNames: string[] = accounts.map((account) => account.meta.name);
+  const accountNames: string[] = accounts.map((account) => account.meta.name as string);
   const [balances, setBalances] = useState<{[index: string]: string }>({});
 
   useEffect(() => {
-    let unsubscribeAll: Function | undefined;
+    let unsubscribeAll: () => void | undefined;
 
-    api.query.balances.freeBalance
-      .multi(addresses, (currentBalances) => {
+    api.query.system.account
+      .multi(addresses, (currentBalances: AccountInfo[]) => {
         const balancesMap = addresses.reduce((acc, address, index) => ({
           ...acc,
-          [address]: currentBalances[index].toString()
+          [address]: currentBalances[index].data.free.toString()
         }), {});
         setBalances(balancesMap);
       })
@@ -30,7 +31,7 @@ export default function Balances (props: Props) {
       .catch(console.error);
 
     return () => unsubscribeAll && unsubscribeAll();
-  }, [api.query.balances.freeBalance]);
+  }, [api, addresses]);
 
   return (
     <>

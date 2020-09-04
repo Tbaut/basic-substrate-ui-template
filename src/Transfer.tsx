@@ -22,7 +22,7 @@ const initialState: FormState = {
   amount: 0
 };
 
-export default function Transfer (props: Props) {
+export default function Transfer (props: Props): JSX.Element {
   const { api, keyring } = props;
   const [formState, setFormState] = useState<FormState>(initialState);
   const [status, setStatus] = useState<string>('');
@@ -32,7 +32,7 @@ export default function Transfer (props: Props) {
   const keyringOptions = keyring.getPairs().map((account) => ({
     key: account.address,
     value: account.address,
-    text: account.meta.name.toUpperCase()
+    text: (account.meta.name as string).toUpperCase()
   }));
 
   const onChange = (_: SyntheticEvent<HTMLElement, Event>, data: InputOnChangeData | DropdownProps): void => {

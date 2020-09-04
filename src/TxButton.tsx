@@ -13,7 +13,7 @@ interface Props {
     tx: any;
 }
 
-export default function TxButton ({ api, fromPair, label, params, setStatus, tx }: Props) {
+export default function TxButton ({ api, fromPair, label, params, setStatus, tx }: Props): JSX.Element {
   const makeCall = async () => {
     if (fromPair) {
       const { address, meta: { source, isInjected } } = fromPair;
@@ -21,7 +21,7 @@ export default function TxButton ({ api, fromPair, label, params, setStatus, tx 
 
       // set the signer
       if (isInjected) {
-        const injected = await web3FromSource(source);
+        const injected = await web3FromSource(source as string);
         fromParam = address;
         api.setSigner(injected.signer);
       } else {

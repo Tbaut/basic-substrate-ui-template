@@ -11,7 +11,7 @@ type NodeInfoType = {
   nodeVersion?: string;
 };
 
-export default function NodeInfo (props: Props) {
+export default function NodeInfo (props: Props): JSX.Element {
   const { api } = props;
   const [nodeInfo, setNodeInfo] = useState<NodeInfoType>({});
 
