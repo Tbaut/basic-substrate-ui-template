@@ -46,7 +46,7 @@ export default function App (): JSX.Element {
   };
 
   useEffect(() => {
-    web3Enable('basic-dapp-tutorial')
+    web3Enable(undefined as any)
       .then(() => {
         // web3Account resolves with the injected accounts
         // or an empty array
