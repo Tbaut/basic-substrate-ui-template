@@ -21,8 +21,8 @@ export default function App (): JSX.Element {
   const [api, setApi] = useState<ApiPromise>(new ApiPromise());
   const [apiReady, setApiReady] = useState(false);
   const [accountLoaded, setaccountLoaded] = useState(false);
-  const WS_PROVIDER = 'ws://127.0.0.1:9944';
-  // const WS_PROVIDER = 'wss://dev-node.substrate.dev:9944';
+  // const WS_PROVIDER = 'ws://127.0.0.1:9944';
+  const WS_PROVIDER = 'wss://dev-node.substrate.dev:9944';
 
   useEffect(() => {
     const provider = new WsProvider(WS_PROVIDER);
@@ -30,11 +30,14 @@ export default function App (): JSX.Element {
     ApiPromise.create({provider})
       .then((api) => {
         setApi(api);
-        api.isReady.then(() => setApiReady(true));
       })
       .catch(console.error);
   }, []);
   
+  useEffect(() => {
+    api.isReady.then(() => setApiReady(true));
+    }, [api.isReady]);
+
   const loadAccounts = (injectedAccounts: injectedAccountType[] = []): void => {
     keyring.loadAll({
       isDevelopment: true
