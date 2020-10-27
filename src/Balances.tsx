@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ApiPromise } from '@polkadot/api';
 import { AccountInfo } from '@polkadot/types/interfaces';
 import { Table } from 'semantic-ui-react';
 import { Keyring } from '@polkadot/ui-keyring';
+import { injectedAccountType } from './App';
 
 type Props = {
+  accounts: injectedAccountType[];
   api: ApiPromise;
-  keyring: Keyring;
 }
 
 export default function Balances (props: Props): JSX.Element {
-  const { api, keyring } = props;
-  const accounts = keyring.getPairs();
-  const addresses = accounts.map(account => account.address);
-  const accountNames: string[] = accounts.map((account) => account.meta.name as string);
+  const { accounts, api } = props;
+  // const accounts = keyring.getPairs();
+  const addresses = useMemo(() => accounts.map(account => account.address), [accounts]);
+  const accountNames: string[] = useMemo(() => accounts.map((account) => account.meta.name as string), [accounts]);
   const [balances, setBalances] = useState<{[index: string]: string }>({});
 
   useEffect(() => {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Dimmer, Loader } from 'semantic-ui-react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
+import { web3Accounts, web3AccountsSubscribe, web3Enable } from '@polkadot/extension-dapp';
 import keyring from '@polkadot/ui-keyring';
 
 import Balances from './Balances';
@@ -9,7 +9,7 @@ import NodeInfo from './NodeInfo';
 import 'semantic-ui-css/semantic.min.css';
 import Transfer from './Transfer';
 
-type injectedAccountType = {
+export type injectedAccountType = {
   address: string;
   meta: {
       name: string;
@@ -21,8 +21,10 @@ export default function App (): JSX.Element {
   const [api, setApi] = useState<ApiPromise>(new ApiPromise());
   const [apiReady, setApiReady] = useState(false);
   const [accountLoaded, setaccountLoaded] = useState(false);
+  const [accounts, setAccounts] = useState<injectedAccountType[]>([]);
   // const WS_PROVIDER = 'ws://127.0.0.1:9944';
-  const WS_PROVIDER = 'wss://dev-node.substrate.dev:9944';
+  const WS_PROVIDER = 'wss://dev-node.substrate.dev';
+  const isLoaded = useRef(false);
 
   useEffect(() => {
     const provider = new WsProvider(WS_PROVIDER);
@@ -46,26 +48,46 @@ export default function App (): JSX.Element {
   };
 
   useEffect(() => {
+    let unsub: () => void;
     web3Enable('basic-dapp-tutorial')
       .then(() => {
+
+        web3AccountsSubscribe((accounts) => {
+          console.log('new accounts');
+          const acc = accounts.map(({ address, meta }) => ({
+            address,
+            meta: {
+              ...meta,
+              name: `${meta.name} (${meta.source})`
+            }
+          }));
+          setAccounts(acc);
+          if (!isLoaded.current){
+            loadAccounts(acc);
+            isLoaded.current = true;
+          }
+        }).then(unsubscribe => {unsub = unsubscribe;})
+        .catch(console.error);
         // web3Account resolves with the injected accounts
         // or an empty array
-        web3Accounts()
-          .then((accounts) => {
-            return accounts.map(({ address, meta }) => ({
-              address,
-              meta: {
-                ...meta,
-                name: `${meta.name} (${meta.source})`
-              }
-            }));
-          })
-          .then((injectedAccounts) => {
-            loadAccounts(injectedAccounts);
-          })
-          .catch(console.error);
+        // web3Accounts()
+        //   .then((accounts) => {
+        //     return accounts.map(({ address, meta }) => ({
+        //       address,
+        //       meta: {
+        //         ...meta,
+        //         name: `${meta.name} (${meta.source})`
+        //       }
+        //     }));
+        //   })
+        //   .then((injectedAccounts) => {
+        //     loadAccounts(injectedAccounts);
+        //   })
+        //   .catch(console.error);
       })
       .catch(console.error);
+
+      return () => unsub && unsub();
   }, []);
 
 
@@ -91,8 +113,8 @@ export default function App (): JSX.Element {
         api={api}
       />
       <Balances
+        accounts={accounts}
         api={api}
-        keyring={keyring}
       />
       <Transfer
         api={api}
