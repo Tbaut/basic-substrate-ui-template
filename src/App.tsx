@@ -23,7 +23,8 @@ export default function App (): JSX.Element {
   const [accountLoaded, setaccountLoaded] = useState(false);
   // const WS_PROVIDER = 'ws://127.0.0.1:9944';
   // const WS_PROVIDER = 'wss://dev-node.substrate.dev:9944';
-  const WS_PROVIDER = 'wss://kusama-rpc.polkadot.io';
+  // const WS_PROVIDER = 'wss://kusama-rpc.polkadot.io';
+  const WS_PROVIDER = 'wss://westend-rpc.polkadot.io';
 
   useEffect(() => {
     const provider = new WsProvider(WS_PROVIDER);
