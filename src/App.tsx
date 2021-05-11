@@ -43,9 +43,9 @@ export default function App (): JSX.Element {
   }, []);
   
   useEffect(() => {
-      api?.isReady.then(() => setApiReady(true));
-    },
-    [api?.isReady]
+    api?.isReady.then(() => setApiReady(true));
+  },
+  [api?.isReady]
   );
 
   const loadAccounts = (injectedAccounts: injectedAccountType[] = []): void => {

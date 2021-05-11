@@ -62,13 +62,13 @@ export default function Transfer (props: Props): JSX.Element {
       try {
         setStatus('Sending...');
         api.tx.balances.transferKeepAlive(addressTo, amount)
-        .signAndSend(fromParam, ({ status }) => {
-          if (status.isFinalized) {
-            setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
-          } else {
-            setStatus(`Current transfer status: ${status.type}`);
-          }
-        });
+          .signAndSend(fromParam, ({ status }) => {
+            if (status.isFinalized) {
+              setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
+            } else {
+              setStatus(`Current transfer status: ${status.type}`);
+            }
+          });
       } catch (e) {
         setStatus(':( transaction failed');
         console.error('ERROR:', e);
@@ -115,13 +115,13 @@ export default function Transfer (props: Props): JSX.Element {
           />
         </Form.Field>
         <Form.Field>
-        <Button
-          onClick={makeCall}
-          primary
-          type='submit'
-        >
+          <Button
+            onClick={makeCall}
+            primary
+            type='submit'
+          >
           Send
-        </Button>
+          </Button>
           {status}
         </Form.Field>
       </Form>
