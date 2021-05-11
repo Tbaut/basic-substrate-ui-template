@@ -3,6 +3,8 @@ import { Container, Dimmer, Loader } from 'semantic-ui-react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import keyring from '@polkadot/ui-keyring';
+import types from './bridgeTypes.json';
+import { TypeRegistry } from '@polkadot/types';
 
 import Balances from './Balances';
 import NodeInfo from './NodeInfo';
@@ -18,32 +20,36 @@ type injectedAccountType = {
 }
 
 export default function App (): JSX.Element {
-  const [api, setApi] = useState<ApiPromise>(new ApiPromise());
+  const registry = new TypeRegistry();
+  const [api, setApi] = useState<ApiPromise | undefined>();
   const [apiReady, setApiReady] = useState(false);
   const [accountLoaded, setaccountLoaded] = useState(false);
-  // const WS_PROVIDER = 'ws://127.0.0.1:9944';
+  const WS_PROVIDER = 'ws://127.0.0.1:9944';
   // const WS_PROVIDER = 'wss://dev-node.substrate.dev:9944';
   // const WS_PROVIDER = 'wss://kusama-rpc.polkadot.io';
-  const WS_PROVIDER = 'wss://westend-rpc.polkadot.io';
+  // const WS_PROVIDER = 'wss://westend-rpc.polkadot.io';
 
   useEffect(() => {
+    if (api) return;
+    
     const provider = new WsProvider(WS_PROVIDER);
 
-    ApiPromise.create({provider})
+    ApiPromise.create({provider, types})
       .then((api) => {
+        types && registry.register(types);
         setApi(api);
       })
       .catch(console.error);
   }, []);
   
   useEffect(() => {
-    api.isReady.then(() => setApiReady(true));
-    }, [api.isReady]);
+      api?.isReady.then(() => setApiReady(true));
+    },
+    [api?.isReady]
+  );
 
   const loadAccounts = (injectedAccounts: injectedAccountType[] = []): void => {
-    keyring.loadAll({
-      isDevelopment: true
-    }, injectedAccounts);
+    keyring.loadAll({isDevelopment: true}, injectedAccounts);
     setaccountLoaded(true);
   };
 
@@ -79,7 +85,7 @@ export default function App (): JSX.Element {
     );
   };
 
-  if (!apiReady) {
+  if (!apiReady || !api) {
     return loader('Connecting to the blockchain');
   }
 
@@ -100,6 +106,7 @@ export default function App (): JSX.Element {
         api={api}
         keyring={keyring}
       />
+      <br/>
     </Container>
   );
 }

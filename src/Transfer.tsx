@@ -1,9 +1,10 @@
-import React, { useState, SyntheticEvent } from 'react';
+import React, { useState, SyntheticEvent, useCallback } from 'react';
 import { ApiPromise } from '@polkadot/api';
 import { Keyring } from '@polkadot/ui-keyring';
-import { Dropdown, Form, Input, DropdownProps, InputOnChangeData } from 'semantic-ui-react';
+import { Dropdown, Form, Input, DropdownProps, InputOnChangeData, Button } from 'semantic-ui-react';
 
-import TxButton from './TxButton';
+import { KeyringPair } from '@polkadot/keyring/types';
+import { web3FromSource } from '@polkadot/extension-dapp';
 
 interface Props {
   api: ApiPromise;
@@ -44,6 +45,37 @@ export default function Transfer (props: Props): JSX.Element {
     });
   };
 
+  const makeCall = useCallback(async () => {
+    if (fromPair) {
+      const { address, meta: { source, isInjected } } = fromPair;
+      let fromParam: string | KeyringPair;
+
+      // set the signer
+      if (isInjected) {
+        const injected = await web3FromSource(source as string);
+        fromParam = address;
+        api.setSigner(injected.signer);
+      } else {
+        fromParam = fromPair;
+      }
+
+      try {
+        setStatus('Sending...');
+        api.tx.balances.transferKeepAlive(addressTo, amount)
+        .signAndSend(fromParam, ({ status }) => {
+          if (status.isFinalized) {
+            setStatus(`Completed at block hash #${status.asFinalized.toString()}`);
+          } else {
+            setStatus(`Current transfer status: ${status.type}`);
+          }
+        });
+      } catch (e) {
+        setStatus(':( transaction failed');
+        console.error('ERROR:', e);
+      }
+    }
+  }, []);
+  
   return (
     <>
       <h1>Transfer</h1>
@@ -83,14 +115,13 @@ export default function Transfer (props: Props): JSX.Element {
           />
         </Form.Field>
         <Form.Field>
-          <TxButton
-            api={api}
-            fromPair={fromPair}
-            label={'Send'}
-            params={[addressTo, amount]}
-            setStatus={setStatus}
-            tx={api.tx.balances.transfer}
-          />
+        <Button
+          onClick={makeCall}
+          primary
+          type='submit'
+        >
+          Send
+        </Button>
           {status}
         </Form.Field>
       </Form>
