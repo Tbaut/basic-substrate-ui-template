@@ -1,4 +1,7 @@
 # Skeleton for a basic Substrate UI tutorial
+
+Follow the tutorial here https://github.com/Tbaut/substrate-developer-hub.github.io/tree/516e6645703f68baaa3ba2c2879532fc750dba62/docs/tutorials/substrate-front-end 
+
 ## Available Scripts
 
 In the project directory, you can run:
